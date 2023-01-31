@@ -28,13 +28,14 @@ require_once($CFG->dirroot.'/lib/enrollib.php');
 require_once($CFG->dirroot.'/enrol/meta/locallib.php');
 require_once($CFG->dirroot.'/enrol/cohort/lib.php');
 require_once($CFG->dirroot.'/enrol/cohort/locallib.php');
+require_once($CFG->dirroot.'/enrol/groupsync/locallib.php');
 require_once($CFG->dirroot.'/admin/tool/uploaduser/locallib.php');
 
 
 /**
  * Validates and processes files for uploading a course enrolment methods CSV file
  *
- * @copyright  2013 Frédéric Massart
+ * @copyright  2013 FrÃ©dÃ©ric Massart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class tool_uploadenrolmentmethods_processor {
@@ -167,7 +168,7 @@ class tool_uploadenrolmentmethods_processor {
                 continue;
             }
             // Check we've got a valid method.
-            if (!in_array($method, array('meta', 'cohort'))) {
+            if (!in_array($method, array('meta', 'cohort', 'groupsync'))) {
                 $errors++;
                 $messagerow['result'] = get_string('invalidmethod', 'tool_uploadenrolmentmethods');
                 $tracker->output($messagerow, false);
@@ -187,7 +188,13 @@ class tool_uploadenrolmentmethods_processor {
                     get_string('pluginname', 'enrol_cohort'));
                 $tracker->output($messagerow, false);
                 continue;
-            }
+            } else if ($method == 'groupsync' && !enrol_is_enabled('groupsync')) {
+                // Check the cohort sync enrolment method is enabled.
+                $errors++;
+                $messagerow['result'] = get_string('methoddisabledwarning', 'tool_uploadenrolmentmethods',
+                    get_string('pluginname', 'enrol_groupsync'));
+                $tracker->output($messagerow, false);
+                continue;
 
             // Check the target course we're assigning the method to exists.
             if (!$target = $DB->get_record('course', array('shortname' => $targetshortname))) {
@@ -203,7 +210,7 @@ class tool_uploadenrolmentmethods_processor {
                 $messagerow['result'] = get_string('parentnotfound', 'tool_uploadenrolmentmethods');
                 $tracker->output($messagerow, false);
                 continue;
-            } else if ($method == 'cohort' && (!$parent = $DB->get_record('cohort', array('idnumber' => $parentid)))) {
+            } else if ($method == 'cohort' || $method == 'groupsync' && (!$parent = $DB->get_record('cohort', array('idnumber' => $parentid)))) {
                 // Check the cohort we're syncing exists.
                 $errors++;
                 $messagerow['result'] = get_string('cohortnotfound', 'tool_uploadenrolmentmethods');
@@ -277,15 +284,23 @@ class tool_uploadenrolmentmethods_processor {
                     'enrol' => $method,
                     'roleid' => $roleid
                 );
-
-                $instancenewparams = array(
-                    'customint1' => $parent->id,
-                    'roleid' => $roleid
-                );
-
-                // If method members should be added to a group, create it or get its ID.
-                if ($groupname != '') {
-                    $instancenewparams['customint2'] = uploadenrolmentmethods_get_group($target->id, $groupname);
+                
+                if ($method != 'groupsync') {
+                    $instancenewparams = array(
+                        'customint1' => $parent->id,
+                        'roleid' => $roleid
+                    );
+                    // If method members should be added to a group, create it or get its ID.
+                    if ($groupname != '') {
+                        $instancenewparams['customint2'] = uploadenrolmentmethods_get_group($target->id, $groupname);
+                    }
+                } else {
+                    $groupsyncparams = array(
+                        'name' = '',
+                        'status' => ENROL_INSTANCE_ENABLED,
+                        'customint1' => $parent->id,
+                        'customint2' => uploadenrolmentmethods_get_group($target->id, $groupname)
+                    );
                 }
 
                 if ($method == 'meta' && ($instance = $DB->get_record('enrol', $instancemetacheck))) {
@@ -306,6 +321,8 @@ class tool_uploadenrolmentmethods_processor {
                         $cohorttrace = new null_progress_trace();
                         enrol_cohort_sync($cohorttrace, $target->id);
                         $cohorttrace->finished();
+                    } else if ($method == 'groupsync') {
+                        enrol_groupsync_sync($course->id);
                     }
 
                     // Is it initially disabled?

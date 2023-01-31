@@ -362,7 +362,7 @@ class tool_uploadenrolmentmethods_processor {
      * @param array $line returned by csv_import_reader
      * @return array
      */
-    public function parse_line($line) {
+    protected function parse_line($line) {
         $data = array();
         foreach ($line as $keynum => $value) {
             if (!isset($this->columns[$keynum])) {
@@ -393,7 +393,7 @@ class tool_uploadenrolmentmethods_processor {
      *
      * @return void
      */
-    public function validate() {
+    protected function validate() {
         if (empty($this->columns)) {
             throw new moodle_exception('cannotreadtmpfile', 'error');
         } else if (count($this->columns) < 2) {

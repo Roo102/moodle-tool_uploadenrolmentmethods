@@ -102,6 +102,11 @@ if ($data = $form->get_data()) {
             get_string('pluginname', 'enrol_cohort')));
         $displaymanageenrollink = 1;
     }
+    if (!enrol_is_enabled('groupsync')) {
+        echo html_writer::tag('div', get_string('methoddisabledwarning', 'tool_uploadenrolmentmethods',
+            get_string('pluginname', 'enrol_groupsync')));
+        $displaymanageenrollink = 1;
+    }
     if ($displaymanageenrollink) {
         $manageenrolsurl = new moodle_url('/admin/settings.php', array('section' => 'manageenrols'));
         $strmanage = get_string('manageenrols', 'enrol');

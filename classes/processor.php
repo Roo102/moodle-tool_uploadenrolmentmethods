@@ -381,7 +381,7 @@ class tool_uploadenrolmentmethods_processor {
      *
      * @return void.
      */
-    public function reset() {
+    function reset() {
         $this->processstarted = false;
         $this->linenb = 0;
         $this->cir->init();

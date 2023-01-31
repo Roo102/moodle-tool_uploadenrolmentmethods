@@ -296,7 +296,7 @@ class tool_uploadenrolmentmethods_processor {
                     }
                 } else {
                     $groupsyncparams = array(
-                        'name' = '',
+                        'name' => '',
                         'status' => ENROL_INSTANCE_ENABLED,
                         'customint1' => $parent->id,
                         'customint2' => uploadenrolmentmethods_get_group($target->id, $groupname)

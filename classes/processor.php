@@ -312,6 +312,8 @@ class tool_uploadenrolmentmethods_processor {
                     $errors++;
                     $messagerow['result'] = get_string('relalreadyexists', 'tool_uploadenrolmentmethods');
                     $tracker->output($messagerow, false);
+                } else if ($method == 'groupsync' && $instanceid = $enrol->add_instance($target, $groupsyncparams)) {
+                    enrol_groupsync_sync($course->id);
                 } else if ($instanceid = $enrol->add_instance($target, $instancenewparams)) {
                     // Successfully added a valid new instance, so now instantiate it.
                     // First synchronise the enrolment.
@@ -321,8 +323,6 @@ class tool_uploadenrolmentmethods_processor {
                         $cohorttrace = new null_progress_trace();
                         enrol_cohort_sync($cohorttrace, $target->id);
                         $cohorttrace->finished();
-                    } else if ($method == 'groupsync') {
-                        enrol_groupsync_sync($course->id);
                     }
 
                     // Is it initially disabled?
@@ -362,7 +362,7 @@ class tool_uploadenrolmentmethods_processor {
      * @param array $line returned by csv_import_reader
      * @return array
      */
-    function parse_line($line) {
+    protected function parse_line($line) {
         $data = array();
         foreach ($line as $keynum => $value) {
             if (!isset($this->columns[$keynum])) {
@@ -381,7 +381,7 @@ class tool_uploadenrolmentmethods_processor {
      *
      * @return void.
      */
-    function reset() {
+    public function reset() {
         $this->processstarted = false;
         $this->linenb = 0;
         $this->cir->init();
@@ -393,7 +393,7 @@ class tool_uploadenrolmentmethods_processor {
      *
      * @return void
      */
-    function validate() {
+    protected function validate() {
         if (empty($this->columns)) {
             throw new moodle_exception('cannotreadtmpfile', 'error');
         } else if (count($this->columns) < 2) {

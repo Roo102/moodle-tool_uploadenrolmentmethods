@@ -302,7 +302,7 @@ class tool_uploadenrolmentmethods_processor {
                 }
 
                 if ($method == 'groupsync') {
-                    unset($instancenewparams['roleid'])
+                    unset($instancenewparams['roleid']);
                 }
 
                 if ($method == 'meta' && ($instance = $DB->get_record('enrol', $instancemetacheck))) {

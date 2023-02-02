@@ -210,7 +210,13 @@ class tool_uploadenrolmentmethods_processor {
                 $messagerow['result'] = get_string('parentnotfound', 'tool_uploadenrolmentmethods');
                 $tracker->output($messagerow, false);
                 continue;
-            } else if ($method == 'cohort' || $method == 'groupsync' && (!$parent = $DB->get_record('cohort', array('idnumber' => $parentid)))) {
+            } else if ($method == 'cohort' && (!$parent = $DB->get_record('cohort', array('idnumber' => $parentid)))) {
+                // Check the cohort we're syncing exists.
+                $errors++;
+                $messagerow['result'] = get_string('cohortnotfound', 'tool_uploadenrolmentmethods');
+                $tracker->output($messagerow, false);
+                continue;
+            } else if ($method == 'groupsync' && (!$parent = $DB->get_record('cohort', array('idnumber' => $parentid)))) {
                 // Check the cohort we're syncing exists.
                 $errors++;
                 $messagerow['result'] = get_string('cohortnotfound', 'tool_uploadenrolmentmethods');

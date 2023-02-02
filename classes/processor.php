@@ -28,7 +28,6 @@ require_once($CFG->dirroot.'/lib/enrollib.php');
 require_once($CFG->dirroot.'/enrol/meta/locallib.php');
 require_once($CFG->dirroot.'/enrol/cohort/lib.php');
 require_once($CFG->dirroot.'/enrol/cohort/locallib.php');
-require_once($CFG->dirroot.'/enrol/groupsync/lib.php');
 require_once($CFG->dirroot.'/enrol/groupsync/locallib.php');
 require_once($CFG->dirroot.'/admin/tool/uploaduser/locallib.php');
 

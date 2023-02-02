@@ -291,22 +291,18 @@ class tool_uploadenrolmentmethods_processor {
                     'roleid' => $roleid
                 );
 
-                if ($method != 'groupsync') {
-                    $instancenewparams = array(
-                        'customint1' => $parent->id,
-                        'roleid' => $roleid
-                    );
-                    // If method members should be added to a group, create it or get its ID.
-                    if ($groupname != '') {
-                        $instancenewparams['customint2'] = uploadenrolmentmethods_get_group($target->id, $groupname);
-                    }
-                } else {
-                    $groupsyncparams = array(
-                        'name' => '',
-                        'status' => ENROL_INSTANCE_ENABLED,
-                        'customint1' => $parent->id,
-                        'customint2' => uploadenrolmentmethods_get_group($target->id, $groupname)
-                    );
+                $instancenewparams = array(
+                    'customint1' => $parent->id,
+                    'roleid' => $roleid
+                );
+
+                // If method members should be added to a group, create it or get its ID.
+                if ($groupname != '') {
+                    $instancenewparams['customint2'] = uploadenrolmentmethods_get_group($target->id, $groupname);
+                }
+
+                if ($method == 'groupsync') {
+                    unset($instancenewparams['roleid'])
                 }
 
                 if ($method == 'meta' && ($instance = $DB->get_record('enrol', $instancemetacheck))) {
@@ -318,8 +314,6 @@ class tool_uploadenrolmentmethods_processor {
                     $errors++;
                     $messagerow['result'] = get_string('relalreadyexists', 'tool_uploadenrolmentmethods');
                     $tracker->output($messagerow, false);
-                } else if ($method == 'groupsync' && $instanceid = $enrol->add_instance($target, $groupsyncparams)) {
-                    enrol_groupsync_sync($course->id);
                 } else if ($instanceid = $enrol->add_instance($target, $instancenewparams)) {
                     // Successfully added a valid new instance, so now instantiate it.
                     // First synchronise the enrolment.
@@ -329,6 +323,8 @@ class tool_uploadenrolmentmethods_processor {
                         $cohorttrace = new null_progress_trace();
                         enrol_cohort_sync($cohorttrace, $target->id);
                         $cohorttrace->finished();
+                    } else if ($method == 'groupsync') {
+                        enrol_groupsync($instancenewparams['customint1']);
                     }
 
                     // Is it initially disabled?

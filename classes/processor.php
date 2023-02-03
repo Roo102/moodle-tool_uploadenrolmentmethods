@@ -189,7 +189,7 @@ class tool_uploadenrolmentmethods_processor {
                 $tracker->output($messagerow, false);
                 continue;
             } else if ($method == 'groupsync' && !enrol_is_enabled('groupsync')) {
-                // Check the cohort sync enrolment method is enabled.
+                // Check the groupsync sync enrolment method is enabled.
                 $errors++;
                 $messagerow['result'] = get_string('methoddisabledwarning', 'tool_uploadenrolmentmethods',
                     get_string('pluginname', 'enrol_groupsync'));
@@ -232,6 +232,7 @@ class tool_uploadenrolmentmethods_processor {
                 $tracker->output($messagerow, false);
                 continue;
             } else if ($method == 'groupsync') {
+                // role is not used in the groupsync enrolment method, so set roleid to 0.
                 $roleid = 0;
             } else {
                 $roleid = $rolecache[$rolename]->id;
@@ -305,6 +306,8 @@ class tool_uploadenrolmentmethods_processor {
                     $instancenewparams['customint2'] = uploadenrolmentmethods_get_group($target->id, $groupname);
                 }
 
+                // If using the groupsync enrolment method, create instance name with cohort ID and Group name.
+                // Also, set roleid to 0 as it is not required for groupsync.
                 if ($method == 'groupsync') {
                     $instancenewparams['name'] = $parentid . ' members to group: ' . $groupname;
                     $instancenewparams['roleid'] = 0;

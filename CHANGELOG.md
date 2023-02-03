@@ -1,6 +1,10 @@
 # Change Log
 All notable changes to this project will be documented in this file.
 
+## [1.3.5] - 2023-02-03
+### Added
+- Add support for enrolment method Cohort Members to Group (enrol_groupsync)
+
 ## [1.3.4] - 2021-08-02
 ### Added
 - Clean up code to improve style and conform to latest conventions

@@ -52,11 +52,12 @@ The format of the CSV file is as follows:
 * The fields are: operation, enrolment method, target course shortname, parent course shortname or cohort idnumber, disabled status[, group name[, role]].
 * All fields are required except group and role.
 * The operations are add, del(ete) and upd(ate).
-* The supported enrolment methods are meta and cohort.
+* The supported enrolment methods are meta, groupsync and cohort.
 * The disabled status values are 1 (disabled) or 0 (enabled).
 * Students enrolled via the method will be placed in the group specified in the group name field.
   The group will be created if it doesn't already exist.
 * The role field must be a valid role name such as editingteacher, student, etc.
+* The role field will be ignored for the groupsync method as it is not required.
 
 ## License ##
 

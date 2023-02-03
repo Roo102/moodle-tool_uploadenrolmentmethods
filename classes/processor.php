@@ -302,7 +302,7 @@ class tool_uploadenrolmentmethods_processor {
                 }
 
                 if ($method == 'groupsync') {
-                    unset($instancenewparams['roleid']);
+                    $instancenewparams['roleid'] = 0;
                 }
 
                 if ($method == 'meta' && ($instance = $DB->get_record('enrol', $instancemetacheck))) {
@@ -324,7 +324,7 @@ class tool_uploadenrolmentmethods_processor {
                         enrol_cohort_sync($cohorttrace, $target->id);
                         $cohorttrace->finished();
                     } else if ($method == 'groupsync') {
-                        enrol_groupsync($instancenewparams['customint1']);
+                        enrol_groupsync_sync($instancenewparams['customint1']);
                     }
 
                     // Is it initially disabled?

@@ -293,6 +293,14 @@ class tool_uploadenrolmentmethods_processor {
                     'roleid' => $roleid
                 );
 
+                $instancegroupsynccheck = array(
+                    'courseid' => $target->id,
+                    'customint1' => $parent->id,
+                    'customint2' => uploadenrolmentmethods_get_group($target->id, $groupname),
+                    'enrol' => $method,
+                    'roleid' => $roleid
+                );
+
                 $instancenewparams = array(
                     'customint1' => $parent->id,
                     'roleid' => $roleid
@@ -310,6 +318,10 @@ class tool_uploadenrolmentmethods_processor {
                 if ($method == 'meta' && ($instance = $DB->get_record('enrol', $instancemetacheck))) {
                     $errors++;
                     $messagerow['result'] = get_string('targetisparent', 'tool_uploadenrolmentmethods');
+                    $tracker->output($messagerow, false);
+                } else if ($method == 'groupsync' && ($instance = $DB->get_record('enrol', $instancegroupsynccheck))) {
+                    $errors++;
+                    $messagerow['result'] = get_string('relalreadyexists', 'tool_uploadenrolmentmethods');
                     $tracker->output($messagerow, false);
                 } else if ($instance = $DB->get_record('enrol', $instanceparams)) {
                     // This is a duplicate, skip it.

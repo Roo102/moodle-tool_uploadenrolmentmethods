@@ -1,5 +1,7 @@
 # Upload enrolment methods #
 
+This is a fork of the excellent tool Upload Enrolment Methods written by Eoin Campbell.
+It has been modified to include support for the Cohort Members to Group enrolment method by moodlehq.
 Upload enrolment methods from a CSV file into a range of courses
 
 ## Description ##
